@@ -70,6 +70,21 @@ class ElfinderPresenter extends Nette\Application\UI\Presenter
 {
     use \Ngscz\Elfinder\Presenters\ElfinderPresenter;
 
+    public function renderDefault()
+    {
+        $template = $this->getTemplate();
+
+        $template->includePath = $_SERVER['DOCUMENT_ROOT'] . DIRECTORY_SEPARATOR . '..' . DIRECTORY_SEPARATOR .
+            'vendor' . DIRECTORY_SEPARATOR .
+            'ngscz' . DIRECTORY_SEPARATOR .
+            'nette-elfinder' . DIRECTORY_SEPARATOR .
+            'src' . DIRECTORY_SEPARATOR .
+            'Presenters' . DIRECTORY_SEPARATOR .
+            'templates' . DIRECTORY_SEPARATOR .
+            'Elfinder' . DIRECTORY_SEPARATOR .
+            'default.latte';
+    }    
+
 }
 ```
 
@@ -81,12 +96,13 @@ $router[] = new Route('elfinder/<action>', 'Elfinder:default');
 ```
 
 create template templates/Elfinder/default.latte and include core default.latte file
+(use $includePath variable created in renderDefault method)
 
 
 ```
 etc:
 
-{include '../../../../../src/Ngscz/Elfinder/src/Presenters/templates/Elfinder/default.latte'}
+{include $includePath}
 ```
 
 also you have to add JS hook to bind filemanager to your CMS @layout.latte
