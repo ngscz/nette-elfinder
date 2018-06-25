@@ -9,8 +9,6 @@
         "Studio-42/elFinder": "^2.1"        
     },
     "autoload": {
-        "psr-4": {
-            "ngscz\\NetteElfinder\\": "src"
-        }
+		"classmap": ["src/"] 
     }
 }

@@ -2,20 +2,24 @@
 
 ## Installation
 
-1) Add extra autoload options to composer.json
+1) Add this options to composer.json
 
 ```
-	"autoload": {
-		"classmap":[
-			"src"
-		]
-	}
+	"require": {
+		"ngscz/nette-elfinder": "dev-master"
+	},
+	"repositories": [
+		{
+			"type": "git",
+			"url": "https://github.com/ngscz/nette-elfinder.git"
+		}
+	],
 ```
 
-2) Install Elfinder
+2) Update your composer dependencies
 
 ```
-composer require studio-42/elfinder
+composer update
 ```
 
 3) Add script options to composer.json
@@ -23,7 +27,7 @@ composer require studio-42/elfinder
 ```
 	"scripts": {
 		"ngs-elfinder-move-assets": [
-			"cp -r src/Ngscz/Elfinder/assets www",
+			"cp -r vendor/ngscz/nette-elfinder/assets www",
 			"mkdir -p www/assets/vendor/elfinder",
 			"cp -r vendor/studio-42/elfinder/css www/assets/vendor/elfinder",
 			"cp -r vendor/studio-42/elfinder/js www/assets/vendor/elfinder",
