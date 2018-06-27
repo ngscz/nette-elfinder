@@ -2,7 +2,7 @@
 
 namespace Ngscz\Elfinder\Forms;
 
-use App\GC;
+use App\Model\Entity\Asset;
 use App\Model\Table\AssetTable;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
@@ -15,9 +15,13 @@ class ElfinderInput extends BaseControl
     /** @var bool $onlyImages */
     private $onlyImages = false;
 
-    public function __construct($caption = null)
+    /** @var AssetTable */
+    private $assetTable;
+
+    public function __construct($caption = null, AssetTable $assetTable)
     {
         parent::__construct($caption);
+        $this->assetTable = $assetTable;
     }
 
     public function getControl()
@@ -75,12 +79,9 @@ class ElfinderInput extends BaseControl
         $values = [];
 
         //@todo remove dependency on global container, we should use interface instead of this to return correct values
-        /** @var AssetTable $assetTable */
-        $assetTable = GC::getService('assetTable');
-
         if ($value && count($value)) {
             foreach ($value as $item) {
-                $values[] = $assetTable->getOneByHash($item['hash']);
+                $values[] = $this->assetTable->getOneByHash($item['hash']);
             }
         }
 
