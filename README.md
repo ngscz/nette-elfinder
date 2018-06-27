@@ -16,13 +16,7 @@
 	],
 ```
 
-2) Update your composer dependencies
-
-```
-composer update
-```
-
-3) Add script options to composer.json
+2) Add script options to composer.json
 
 ```
 	"scripts": {
@@ -39,23 +33,29 @@ composer update
 	}
 ```
 
-This script will copy required assets to public (www) directory. If it is not run automatically, you should run:
+3) Update your composer dependencies
+
+```
+composer update
+```
+
+4)
+
+Script above will copy required assets to public (www) directory. If it is not run automatically, you should run:
 
 ```
 composer run-script ngs-elfinder-move-assets
 ```
 
-4) Run command 
-
-
-```
-	composer dump-autoload --optimize --no-dev --classmap-authoritative
-```
-
-You should add this command to deployment process
-
-
 5)
+
+Add extension configuration to config.neon
+```
+extensions:
+	ngs.elfinder: Ngscz\Elfinder\DI\ElfinderExtension
+```    
+
+6)
 
 Create Elfinder presenter and use trait ElfinderPresenter
 
@@ -111,7 +111,7 @@ also you have to add JS hook to bind filemanager to your CMS @layout.latte
 <script src="assets/vendor/ngscz-elfinder/js/ElfinderInputHook.js"></script>
 ```
 
-6) 
+7) 
 
 Example, how to add elfinder to Form
 
@@ -158,10 +158,7 @@ class HomepagePresenter extends FrontendPresenter
 }
 ```
 
-7) 
+@todo
 
 Add example how to save data to DB (Uploader)
 
-## TODO
-
-- secure ElfinderPresenter
