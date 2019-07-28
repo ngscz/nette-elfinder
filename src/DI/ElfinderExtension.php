@@ -23,7 +23,7 @@ class ElfinderExtension extends DI\CompilerExtension
                         'tmbURL' => (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/uploads/.tmb',
                         'tmbPath' =>  $_SERVER['DOCUMENT_ROOT'] . '/uploads/.tmb',
                         'upload_allow' => ['all'],
-                        'disabled' => ['cut', 'rename', 'duplicate', 'selectFolder'],
+                        'disabled' => ['cut', 'copy', 'paste', 'rename', 'duplicate', 'selectFolder'],
                     ],
                 ],
             ]
