@@ -2,8 +2,6 @@
 
 namespace Ngscz\Elfinder\Forms;
 
-use App\Model\Entity\Asset;
-use App\Model\Table\AssetTable;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
 
@@ -15,10 +13,10 @@ class ElfinderInput extends BaseControl
     /** @var bool $onlyImages */
     private $onlyImages = false;
 
-    /** @var AssetTable */
+    /** @var mixed */
     private $assetTable;
 
-    public function __construct($caption = null, AssetTable $assetTable)
+    public function __construct($caption = null, $assetTable)
     {
         parent::__construct($caption);
         $this->assetTable = $assetTable;
