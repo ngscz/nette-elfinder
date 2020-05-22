@@ -158,6 +158,19 @@ class HomepagePresenter extends FrontendPresenter
 }
 ```
 
+8) 
+
+Example, how to add filters based on file mimeType
+```
+    $control = new ElfinderInput($label, $assetTable);
+    $control->onlyMimes(['image', 'audio']); //to show only images and audio files
+    
+    list of possible filters:
+    ['image', 'audio', 'application', 'text', 'video']
+    
+    see main types: https://cs.wikipedia.org/wiki/Typ_internetov%C3%A9ho_m%C3%A9dia#N%C4%9Bkter%C3%A9_%C4%8Dasto_pou%C5%BE%C3%ADvan%C3%A9_typy_m%C3%A9di%C3%AD
+```
+
 @todo
 
 Add example how to save data to DB (Uploader)

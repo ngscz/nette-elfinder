@@ -34,7 +34,7 @@
                     window.opener[getUrlParameter('fileCallback')](file);
                     window.close();
                 }
-                {if $showOnlyImages},onlyMimes: ['image']{/if}
+                {if $onlyMimes},onlyMimes: [{$onlyMimes}]{/if}
                 ,commandsOptions : {
                     edit : {
                         extraOptions : {

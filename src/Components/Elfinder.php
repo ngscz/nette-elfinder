@@ -40,7 +40,7 @@ class Elfinder extends Control
     public function renderManager()
     {
         $template = $this->getTemplate();
-        $template->showOnlyImages = $this->request->getQuery('showOnlyImages');
+        $template->onlyMimes = $this->request->getQuery('onlyMimes', null);
         $template->setFile(__DIR__ . '/template/elfinder.latte');
         $template->render();
     }

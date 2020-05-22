@@ -29,7 +29,7 @@ var ElFinderInputHook = function (input, uniqueId) {
 
         a.onclick = function (e) {
             e.preventDefault();
-            window.open('/elfinder/default?fileCallback=setValue_' + uniqueId + '&showOnlyImages=' + self.showOnlyImages(), 'popupWindow', 'height=450, width=900');
+            window.open('/elfinder/default?fileCallback=setValue_' + uniqueId + '&onlyMimes=' + self.onlyMimes(), 'popupWindow', 'height=450, width=900');
         };
 
         this.input.parentNode.appendChild(a);
@@ -47,9 +47,9 @@ var ElFinderInputHook = function (input, uniqueId) {
         this.refreshList();
     };
 
-    this.showOnlyImages = function () {
-        var showOnlyImages = this.input.getAttribute('data-show-only-images');
-        return parseInt(showOnlyImages);
+    this.onlyMimes = function () {
+        var onlyMimes = this.input.getAttribute('data-only-mimes');
+        return onlyMimes;
     };
 
     this.isMultiple = function() {

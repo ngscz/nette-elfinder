@@ -10,8 +10,8 @@ class ElfinderInput extends BaseControl
     /** @var bool $multiple */
     private $multiple = false;
 
-    /** @var bool $onlyImages */
-    private $onlyImages = false;
+    /** @var array $onlyMimes */
+    private $onlyMimes = [];
 
     /** @var mixed */
     private $assetTable;
@@ -28,7 +28,7 @@ class ElfinderInput extends BaseControl
 
         $control->setAttribute('data-value', $this->getRawValue());
         $control->setAttribute('data-multiple', $this->multiple ? '1': '0');
-        $control->setAttribute('data-show-only-images', $this->onlyImages ? '1': '0');
+        $control->setAttribute('data-only-mimes', implode(',', $this->onlyMimes));
 
         $control->setAttribute('data-elfinder', 'true');
         $control->setAttribute('style', 'display: none;');
@@ -105,13 +105,14 @@ class ElfinderInput extends BaseControl
     public function setMultiple($multiple)
     {
         $this->multiple = $multiple;
+
+        return $this;
     }
 
-    /**
-     * @param bool $onlyImages
-     */
-    public function showOnlyImages($onlyImages)
+    public function setOnlyMimes(array $onlyMimes)
     {
-        $this->onlyImages = $onlyImages;
+        $this->onlyMimes = $onlyMimes;
+
+        return $this;
     }
 }
