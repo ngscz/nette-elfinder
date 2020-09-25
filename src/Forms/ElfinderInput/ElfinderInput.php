@@ -115,4 +115,11 @@ class ElfinderInput extends BaseControl
 
         return $this;
     }
+
+    public function showOnlyImages($onlyImages)
+    {
+        if ($onlyImages) {
+            $this->onlyMimes = ['image'];
+        }
+    }
 }
