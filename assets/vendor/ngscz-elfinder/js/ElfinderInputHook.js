@@ -29,7 +29,7 @@ var ElFinderInputHook = function (input, uniqueId) {
 
         a.onclick = function (e) {
             e.preventDefault();
-            window.open('/elfinder/default?fileCallback=setValue_' + uniqueId + '&onlyMimes=' + self.onlyMimes(), 'popupWindow', 'height=450, width=900');
+            window.open('/elfinder/default?fileCallback=setValue_' + uniqueId + '&onlyMimes=' + self.onlyMimes() + '&isMultiple=' + self.isMultiple(), 'popupWindow', 'height=450, width=900');
         };
 
         this.input.parentNode.appendChild(a);

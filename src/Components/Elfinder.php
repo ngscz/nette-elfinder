@@ -41,6 +41,7 @@ class Elfinder extends Control
     {
         $template = $this->getTemplate();
         $template->onlyMimes = $this->request->getQuery('onlyMimes', null);
+        $template->isMultiple = (bool) $this->request->getQuery('isMultiple', false);
         $template->setFile(__DIR__ . '/template/elfinder.latte');
         $template->render();
     }

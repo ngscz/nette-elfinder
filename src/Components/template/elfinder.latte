@@ -17,6 +17,11 @@
             defaultOpts : {
                 url : '/elfinder/api', // connector URL (REQUIRED)
                 getFileCallback: function(file, fm) {
+                    if (Array.isArray(file)) {
+                        var files = file;
+                    } else {
+                        var files = [file];
+                    }
                     var getUrlParameter = function (name) {
                         name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
                         var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -26,16 +31,24 @@
                     if (parent.tinymce && parent.tinymce.activeEditor) {
                         // pass selected file data to TinyMCE
                         var width = 400;
-                        file.url = file.url + '?width=' + width;
-                        parent.tinymce.activeEditor.windowManager.getParams().oninsert(file, fm);
+                        files.forEach(function(file) {
+                            file.url = file.url + '?width=' + width;
+                            parent.tinymce.activeEditor.windowManager.getParams().oninsert(file, fm);
+                        });
                         // close popup window
                         parent.tinymce.activeEditor.windowManager.close();
                     }
-                    window.opener[getUrlParameter('fileCallback')](file);
+                    files.forEach(function(file) {
+                        window.opener[getUrlParameter('fileCallback')](file);
+                    });
                     window.close();
                 }
                 {if $onlyMimes},onlyMimes: [{$onlyMimes}]{/if}
                 ,commandsOptions : {
+                    getfile : {
+                        // allow to return multiple files info
+                        multiple: {$isMultiple}
+                    },
                     edit : {
                         extraOptions : {
                             // set API key to enable Creative Cloud image editor
