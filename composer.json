@@ -9,6 +9,17 @@
         "Studio-42/elFinder": "^2.1"        
     },
     "autoload": {
-		"classmap": ["src/"] 
+        "classmap": ["src/"]
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@install-nette-elfinder"
+        ],
+        "post-update-cmd": [
+            "@install-nette-elfinder"
+        ],
+        "install-nette-elfinder": [
+            "cp -r 'vendor/ngscz/nette-elfinder/assets' 'www'"
+        ]
     }
 }
