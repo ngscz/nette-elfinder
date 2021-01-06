@@ -22,7 +22,6 @@ class Elfinder extends Control
 
     public function __construct(array $options, Uploader\IUploader $uploader, Request $request)
     {
-        parent::__construct();
         $this->options = $options;
         $this->uploader = $uploader;
         $this->request = $request;
@@ -40,8 +39,8 @@ class Elfinder extends Control
     public function renderManager()
     {
         $template = $this->getTemplate();
-        $template->onlyMimes = $this->request->getQuery('onlyMimes', null);
-        $template->isMultiple = (bool) $this->request->getQuery('isMultiple', false);
+        $template->onlyMimes = $this->request->getQuery('onlyMimes') ?? null;
+        $template->isMultiple = (bool) $this->request->getQuery('isMultiple') ?? false;
         $template->setFile(__DIR__ . '/template/elfinder.latte');
         $template->render();
     }
