@@ -18,10 +18,10 @@ class ElfinderExtension extends DI\CompilerExtension
                 'roots' => [
                     [
                         'driver' => 'LocalFileSystem', // driver for accessing file system (REQUIRED)
-                        'path' => $_SERVER['DOCUMENT_ROOT'] . '/uploads', // path to files (REQUIRED)
+                        'path' => ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/uploads', // path to files (REQUIRED)
                         'URL' => '/uploads/', // URL to files (REQUIRED)
-                        'tmbURL' => (isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/uploads/.tmb',
-                        'tmbPath' =>  $_SERVER['DOCUMENT_ROOT'] . '/uploads/.tmb',
+                        'tmbURL' => isset($_SERVER['HTTP_HOST']) ? ((isset($_SERVER['HTTPS']) ? 'https' : 'http') . '://' . $_SERVER['HTTP_HOST'] . '/uploads/.tmb') : '',
+                        'tmbPath' =>  ($_SERVER['DOCUMENT_ROOT'] ?? '') . '/uploads/.tmb',
                         'upload_allow' => ['all'],
                         'disabled' => ['cut', 'copy', 'paste', 'rename', 'duplicate', 'selectFolder'],
                     ],
