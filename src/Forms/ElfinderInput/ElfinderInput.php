@@ -2,18 +2,23 @@
 
 namespace Ngscz\Elfinder\Forms;
 
+use App\Model\Asset\AssetTable;
 use Nette\Forms\Controls\BaseControl;
 use Nette\Utils\Html;
+use Nette\Utils\Json;
 
 class ElfinderInput extends BaseControl
 {
+    public const OPTION_FIELDS = 'fields';
+    public const OPTION_LOCALES = 'locales';
+
     /** @var bool $multiple */
     private $multiple = false;
 
     /** @var array $onlyMimes */
     private $onlyMimes = [];
 
-    /** @var mixed */
+    /** @var AssetTable */
     private $assetTable;
 
     public function __construct($caption = null, $assetTable)
@@ -30,6 +35,9 @@ class ElfinderInput extends BaseControl
         $control->setAttribute('data-multiple', $this->multiple ? '1': '0');
         $control->setAttribute('data-only-mimes', implode(',', $this->onlyMimes));
 
+        $control->setAttribute('data-locales', Json::encode($this->getOption(self::OPTION_LOCALES)));
+        $control->setAttribute('data-fields', Json::encode($this->getOption(self::OPTION_FIELDS)));
+
         $control->setAttribute('data-elfinder', 'true');
         $control->setAttribute('style', 'display: none;');
 
@@ -41,22 +49,27 @@ class ElfinderInput extends BaseControl
     {
         // convert object to array
         if ($value) {
-            $newValue = array();
-            if (is_array($value)) {
-                foreach ($value as $file) {
-                    if (is_object($file)) {
-                        $newValue[] = array(
-                            'hash' => $file->getHash(),
-                            'url' => '/uploads' . $file->getPath(),
-                        );
-                    }
-                }
-            } else if (is_object($value)) {
-                $newValue[] = array(
-                    'hash' => $value->getHash(),
-                    'url' => '/uploads' . $value->getPath(),
-                );
+            $newValue = [];
+
+            if (!is_array($value)) {
+                $value = [$value];
             }
+
+            foreach ($value as $file) {
+                if (is_object($file)) {
+                    $formValue = [
+                        'hash' => $file->getHash(),
+                        'url' => '/uploads' . $file->getPath(),
+                    ];
+
+                    foreach ($this->getOption(self::OPTION_FIELDS) as $fieldName => $fieldSettings) {
+                        $formValue = $fieldSettings['onLoad']($file, $formValue);
+                    }
+
+                    $newValue[] = $formValue;
+                }
+            }
+
             if ($newValue) {
                 $value = $newValue;
             }
@@ -73,13 +86,23 @@ class ElfinderInput extends BaseControl
 
     public function getValue()
     {
-        $value = json_decode($this->getRawValue(), true);
+        $value = Json::decode($this->getRawValue(), 1);
         $values = [];
 
         //@todo remove dependency on global container, we should use interface instead of this to return correct values
         if ($value && count($value)) {
             foreach ($value as $item) {
-                $values[] = $this->assetTable->getOneByHash($item['hash']);
+                if (is_string($item)) {
+                    $item = Json::decode($item, 1)[0];
+                }
+
+                $file = $this->assetTable->getOneByHash($item['hash']);
+
+                foreach ($this->getOption(self::OPTION_FIELDS) as $fieldName => $fieldSettings) {
+                    $file = $fieldSettings['onSave']($file, $item);
+                }
+
+                $values[] = $file;
             }
         }
 
