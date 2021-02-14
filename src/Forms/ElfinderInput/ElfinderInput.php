@@ -2,10 +2,12 @@
 
 namespace Ngscz\Elfinder\Forms;
 
+use App\Model\Asset\Asset;
 use App\Model\Asset\AssetTable;
 use Nette\Forms\Controls\BaseControl;
-use Nette\Utils\Html;
 use Nette\Utils\Json;
+use Nette\Utils\Html;
+use Nette\Utils\JsonException;
 
 class ElfinderInput extends BaseControl
 {
@@ -21,7 +23,13 @@ class ElfinderInput extends BaseControl
     /** @var AssetTable */
     private $assetTable;
 
-    public function __construct($caption = null, $assetTable)
+    /** @var array */
+    protected $values = [];
+
+    /** @var Asset[]  */
+    protected $files = [];
+
+    public function __construct($caption, $assetTable)
     {
         parent::__construct($caption);
         $this->assetTable = $assetTable;
@@ -49,62 +57,42 @@ class ElfinderInput extends BaseControl
     {
         // convert object to array
         if ($value) {
-            $newValue = [];
-
             if (!is_array($value)) {
                 $value = [$value];
             }
 
+            $newValue = [];
             foreach ($value as $file) {
                 if (is_object($file)) {
                     $formValue = [
                         'hash' => $file->getHash(),
                         'url' => '/uploads' . $file->getPath(),
                     ];
-
-                    foreach ($this->getOption(self::OPTION_FIELDS) as $fieldName => $fieldSettings) {
-                        $formValue = $fieldSettings['onLoad']($file, $formValue);
-                    }
-
                     $newValue[] = $formValue;
+
+                    $this->files[] = $file;
                 }
             }
 
-            if ($newValue) {
+            if ($newValue !== []) {
                 $value = $newValue;
             }
         }
 
-
         if (is_array($value)) {
-            $this->value = json_encode($value);
+            $this->value = Json::encode($value);
         } else {
             $this->value = $value;
         }
+
         return $this;
     }
 
     public function getValue()
     {
-        $value = Json::decode($this->getRawValue(), 1);
-        $values = [];
+        $values = $this->getValues();
 
-        //@todo remove dependency on global container, we should use interface instead of this to return correct values
-        if ($value && count($value)) {
-            foreach ($value as $item) {
-                if (is_string($item)) {
-                    $item = Json::decode($item, 1)[0];
-                }
-
-                $file = $this->assetTable->getOneByHash($item['hash']);
-
-                foreach ($this->getOption(self::OPTION_FIELDS) as $fieldName => $fieldSettings) {
-                    $file = $fieldSettings['onSave']($file, $item);
-                }
-
-                $values[] = $file;
-            }
-        }
+        $values = array_column($values, 'file');
 
         if ($this->multiple) {
             return $values;
@@ -112,9 +100,49 @@ class ElfinderInput extends BaseControl
             if ($values) {
                 return reset($values);
             }
-            return null;
         }
 
+        return null;
+    }
+
+    public function getValues(): array
+    {
+        if ($this->values === []) {
+
+            if ($this->getRawValue() === null) {
+                return [];
+            }
+
+            $decodedValues = [];
+            $rawValues = Json::decode($this->getRawValue(), 1);
+            if ($rawValues && count($rawValues)) {
+                foreach ($rawValues as $item) {
+                    if (is_string($item)) {
+                        $item = Json::decode($item, 1) ?? null;
+                    }
+
+                    if ($item) {
+                        $decodedValues[] = $item;
+                    }
+                }
+            }
+            $values = [];
+
+            if (isset($decodedValues[0][0])) {
+                $decodedValues = $decodedValues[0];
+            }
+
+            foreach ($decodedValues as $item) {
+                //@todo remove dependency on global container, we should use interface instead of this to return correct values
+                $file = $this->assetTable->getOneByHash($item['hash']);
+
+                $values[] = array_merge($item, ['file' => $file]);
+            }
+
+            $this->values = $values;
+        }
+
+        return $this->values;
     }
 
     public function getRawValue()

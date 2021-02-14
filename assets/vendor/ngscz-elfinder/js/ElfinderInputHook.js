@@ -166,14 +166,16 @@ var ElFinderInputHook = function (input, uniqueId) {
                     languageTabContent.appendChild(label);
 
                     var input = null;
+                    var inputValue = (typeof item[language.locale] !== 'undefined') ? (item[language.locale][field.name] || '') : '';
+
                     if (field.type === 'text') {
                         input = document.createElement('input');
                         input.setAttribute('type', 'text');
-                        input.setAttribute('value', item[language.locale][field.name] || '');
+                        input.setAttribute('value', inputValue);
 
                     } else if (field.type === 'textarea') {
                         input = document.createElement('textarea');
-                        input.value = item[language.locale][field.name] || '';
+                        input.value = inputValue;
                     } else {
                         throw 'Unknown field type: ' + field.type;
                     }
@@ -240,6 +242,9 @@ var ElFinderInputHook = function (input, uniqueId) {
         var $input = $(e.target);
         self.files.forEach(function (item, i){
             if (item.hash === $input.data('hash')) {
+                if (typeof self.files[i][$input.data('locale')] === 'undefined') {
+                    self.files[i][$input.data('locale')] = {};
+                }
                 self.files[i][$input.data('locale')][$input.attr('name')] = $input.val();
             }
         });

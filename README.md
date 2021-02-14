@@ -171,6 +171,115 @@ Example, how to add filters based on file mimeType
     see main types: https://cs.wikipedia.org/wiki/Typ_internetov%C3%A9ho_m%C3%A9dia#N%C4%9Bkter%C3%A9_%C4%8Dasto_pou%C5%BE%C3%ADvan%C3%A9_typy_m%C3%A9di%C3%AD
 ```
 
+9)
+
+Custom Elfinder input with custom attributes
+
+```
+<?php declare(strict_types=1);
+
+namespace App\CmsModule\Forms\Controls;
+
+use App\Model\Asset\Asset;
+use Nette\Utils\Json;
+use Ngscz\Elfinder\Forms\ElfinderInput as BaseElfinderInput;
+
+class ElfinderInput extends BaseElfinderInput
+{
+    public function __construct($caption, $assetTable)
+    {
+        parent::__construct($caption, $assetTable);
+
+        $this->setOption(self::OPTION_LOCALES, [
+            [
+                'locale' => 'cs',
+                'label' => 'Česky',
+            ],
+            [
+                'locale' => 'en',
+                'label' => 'Anglicky',
+            ],
+        ]);
+
+        $this->setOption(self::OPTION_FIELDS, [
+            [
+                'name' => 'title',
+                'type' => 'text',
+                'label' => 'Název',
+            ],
+            [
+                'name' => 'description',
+                'type' => 'textarea',
+                'label' => 'Popis',
+            ],
+        ]);
+    }
+
+    public function setValue($value)
+    {
+        parent::setValue($value);
+
+        if ($this->files !== []) {
+            $this->value = Json::encode($this->onLoad());
+        }
+
+        return $this;
+    }
+
+    private function onLoad(): array
+    {
+        $values = [];
+        foreach ($this->files as $asset) {
+            $formValue = [
+                'hash' => $asset->getHash(),
+                'url' => '/uploads' . $asset->getPath(),
+            ];
+
+            foreach ($this->getOption(self::OPTION_LOCALES) as $locale) {
+                $translation = $asset->translate($locale['locale'], false);
+                $formValue[$locale['locale']]['title'] = $translation->getTitle();
+                $formValue[$locale['locale']]['description'] = $translation->getDescription();
+            }
+
+            $values[] = $formValue;
+        }
+
+        return $values;
+    }
+
+    public function onSave(): void
+    {
+        $values = $this->getValues();
+
+        foreach ($values as $key => $formValue) {
+            /** @var Asset $asset */
+            $asset = $formValue['file'];
+
+            foreach ($this->getOption(self::OPTION_LOCALES) as $locale) {
+                $translation = $asset->translate($locale['locale'], false);
+                $translation->setTitle($formValue[$locale['locale']]['title'] ?? null);
+                $translation->setDescription($formValue[$locale['locale']]['description'] ?? null);
+            }
+
+            $asset->mergeNewTranslations();
+
+            $values[$key]['file'] = $asset;
+        }
+
+        $this->values = $values;
+    }
+}
+
+```
+
+and then bind `onSuccess` event
+
+```
+        $this->onSuccess[] = function (Form $form) use ($name): void {
+            $form[$name]->onSave();
+        };
+```
+
 @todo
 
 Add example how to save data to DB (Uploader)
