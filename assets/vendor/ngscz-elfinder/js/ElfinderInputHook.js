@@ -180,7 +180,7 @@ var ElFinderInputHook = function (input, uniqueId) {
                         throw 'Unknown field type: ' + field.type;
                     }
 
-                    input.setAttribute('name', field.name);
+                    input.setAttribute('data-name', field.name);
                     input.setAttribute('style', 'width: 100%');
                     input.setAttribute('data-hash', item.hash);
                     input.setAttribute('data-locale', language.locale);
@@ -245,7 +245,7 @@ var ElFinderInputHook = function (input, uniqueId) {
                 if (typeof self.files[i][$input.data('locale')] === 'undefined') {
                     self.files[i][$input.data('locale')] = {};
                 }
-                self.files[i][$input.data('locale')][$input.attr('name')] = $input.val();
+                self.files[i][$input.data('locale')][$input.data('name')] = $input.val();
             }
         });
         self.refreshInputValues();
