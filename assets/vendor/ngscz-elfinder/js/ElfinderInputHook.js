@@ -212,24 +212,9 @@ var ElFinderInputHook = function (input, uniqueId) {
             Sortable.create(row, {
                 handle: '.col-sortable',
                 onEnd: function (/**Event*/evt) {
-                    var temp = self.files[evt.newIndex];
-                    self.files[evt.newIndex] = self.files[evt.oldIndex];
+                    var oldFile = self.files[evt.oldIndex];
                     self.files.splice(evt.oldIndex, 1);
-
-                    var newFiles = [];
-                    var add = false;
-                    self.files.forEach(function (item, i) {
-                        newFiles.push(item);
-                        if (i == evt.newIndex) {
-                            add = true;
-                            newFiles.push(temp);
-                        }
-                    });
-                    if (!add) {
-                        newFiles.push(temp);
-                    }
-
-                    self.files = newFiles;
+                    self.files.splice(evt.newIndex, 0, oldFile);
 
                     self.refreshInputValues();
                 },
