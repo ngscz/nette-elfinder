@@ -4,6 +4,7 @@
     "homepage": "https://github.com/ngscz/nette-elfinder",
     "keywords": ["nette", "elfinder", "filemanager"],
     "minimum-stability": "dev",
+    "license": "MIT",
     "require": {
         "php": ">=7.2",
         "studio-42/elfinder": "^2.1"
