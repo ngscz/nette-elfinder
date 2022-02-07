@@ -6,7 +6,7 @@
     "minimum-stability": "dev",
     "require": {
         "php": ">=7.2",
-        "Studio-42/elFinder": "^2.1"
+        "studio-42/elfinder": "^2.1"
     },
     "autoload": {
         "classmap": ["src/"]
