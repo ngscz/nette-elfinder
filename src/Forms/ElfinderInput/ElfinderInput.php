@@ -55,27 +55,37 @@ class ElfinderInput extends BaseControl
 
     public function setValue($value)
     {
+        $this->files = [];
+
         // convert object to array
         if ($value) {
-            if (!is_array($value)) {
-                $value = [$value];
+            $values = $value;
+            if (is_string($value)) {
+                $decodedValue = Json::decode($value, true);
+                $values = $this->decodeValues($decodedValue);
+                $this->files = $this->filesFromValues($values);
+                $value = $values;
+            } else if (is_object($value)) {
+                $values = [$value];
             }
 
-            $newValue = [];
-            foreach ($value as $file) {
-                if (is_object($file)) {
-                    $formValue = [
-                        'hash' => $file->getHash(),
-                        'url' => '/uploads' . $file->getPath(),
-                    ];
-                    $newValue[] = $formValue;
+            if ($this->files === []) {
+                $newValue = [];
+                foreach ($values as $file) {
+                    if (is_object($file)) {
+                        $formValue = [
+                            'hash' => $file->getHash(),
+                            'url' => '/uploads' . $file->getPath(),
+                        ];
+                        $newValue[] = $formValue;
 
-                    $this->files[] = $file;
+                        $this->files[] = $file;
+                    }
                 }
-            }
 
-            if ($newValue !== []) {
-                $value = $newValue;
+                if ($newValue !== []) {
+                    $value = $newValue;
+                }
             }
         }
 
@@ -90,9 +100,7 @@ class ElfinderInput extends BaseControl
 
     public function getValue()
     {
-        $values = $this->getValues();
-
-        $values = array_column($values, 'file');
+        $values = $this->filesFromValues($this->getValues());
 
         if ($this->multiple) {
             return $values;
@@ -126,23 +134,33 @@ class ElfinderInput extends BaseControl
                     }
                 }
             }
-            $values = [];
 
             if (isset($decodedValues[0][0])) {
                 $decodedValues = $decodedValues[0];
             }
 
-            foreach ($decodedValues as $item) {
-                //@todo remove dependency on global container, we should use interface instead of this to return correct values
-                $file = $this->assetTable->getOneByHash($item['hash']);
-
-                $values[] = array_merge($item, ['file' => $file]);
-            }
-
-            $this->values = $values;
+            $this->values = $this->decodeValues($decodedValues);
         }
 
         return $this->values;
+    }
+
+    private function decodeValues(array $decodedValues): array
+    {
+        $values = [];
+        foreach ($decodedValues as $item) {
+            //@todo remove dependency on global container, we should use interface instead of this to return correct values
+            $file = $this->assetTable->getOneByHash($item['hash']);
+
+            $values[] = array_merge($item, ['file' => $file]);
+        }
+
+        return $values;
+    }
+
+    private function filesFromValues(array $values): array
+    {
+        return array_column($values, 'file');
     }
 
     public function getRawValue()
