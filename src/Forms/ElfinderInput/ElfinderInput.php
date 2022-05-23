@@ -62,8 +62,10 @@ class ElfinderInput extends BaseControl
             $values = $value;
             if (is_string($value)) {
                 $decodedValue = Json::decode($value, true);
+                if (isset($decodedValue['hash'])) {
+                    $decodedValue = [$decodedValue];
+                }
                 $values = $this->decodeValues($decodedValue);
-                $this->files = $this->filesFromValues($values);
                 $value = $values;
             } else if (is_object($value)) {
                 $values = [$value];
@@ -123,6 +125,7 @@ class ElfinderInput extends BaseControl
 
             $decodedValues = [];
             $rawValues = Json::decode($this->getRawValue(), 1);
+            //dump($rawValues);
             if ($rawValues && count($rawValues)) {
                 foreach ($rawValues as $item) {
                     if (is_string($item)) {
